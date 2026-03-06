@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { AlertCircle } from 'lucide-react'
@@ -17,11 +17,11 @@ function ErrorContent() {
                 </div>
 
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                    登录遇到问题
+                    Login encountered a problem
                 </h1>
 
                 <p className="text-gray-500 dark:text-gray-400 mb-8">
-                    {error || '验证过程中发生了错误，请稍后重试。'}
+                    {error || 'Verification failed. Please try again later.'}
                 </p>
 
                 <div className="space-y-3">
@@ -30,7 +30,7 @@ function ErrorContent() {
                         className="block w-full py-3 px-6 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold
                      shadow-lg shadow-red-500/20 hover:shadow-red-500/30 transition-all hover:scale-[1.02]"
                     >
-                        返回首页
+                        Back to Home
                     </Link>
                 </div>
             </div>

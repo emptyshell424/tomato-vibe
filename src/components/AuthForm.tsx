@@ -52,7 +52,6 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
   const toggleMode = () => {
     setIsLogin(!isLogin)
     setError('')
-    // Optional: Reset form fields on toggle if desired, but keeping them might be better UX
   }
 
   return (
@@ -63,7 +62,6 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20 dark:border-gray-700 overflow-hidden relative"
       >
-        {/* Decorative background elements */}
         <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-tomato/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-orange-400/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -75,13 +73,13 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
             <motion.div
               initial={false}
               animate={{ rotate: isLogin ? 0 : 360 }}
-              transition={{ type: "spring", duration: 1.5 }}
+              transition={{ type: 'spring', duration: 1.5 }}
               className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-tomato to-orange-500 text-white mb-4 shadow-lg shadow-tomato/30"
             >
               <Sparkles size={32} />
             </motion.div>
             <motion.h2
-              key={isLogin ? "login-title" : "register-title"}
+              key={isLogin ? 'login-title' : 'register-title'}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-3xl font-bold text-gray-900 dark:text-white"
@@ -89,7 +87,7 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
               {isLogin ? t('welcomeBack') : t('startJourneyAuth')}
             </motion.h2>
             <motion.p
-              key={isLogin ? "login-subtitle" : "register-subtitle"}
+              key={isLogin ? 'login-subtitle' : 'register-subtitle'}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-gray-500 dark:text-gray-400 mt-2 text-sm"
@@ -134,7 +132,7 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
                     className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
                              bg-gray-50/50 dark:bg-gray-700/50 text-gray-900 dark:text-white
                              focus:ring-2 focus:ring-tomato/20 focus:border-tomato transition-all outline-none"
-                    placeholder="••••••••"
+                    placeholder="******"
                   />
                 </div>
               </div>

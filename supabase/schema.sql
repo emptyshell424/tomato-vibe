@@ -15,6 +15,7 @@ CREATE TABLE public.tasks (
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   title TEXT NOT NULL,
   description TEXT,
+  "order" INTEGER DEFAULT 0,
   estimated_pomodoros INTEGER DEFAULT 0,
   completed_pomodoros INTEGER DEFAULT 0,
   completed BOOLEAN DEFAULT FALSE,
@@ -37,8 +38,12 @@ CREATE TABLE public.pomodoro_sessions (
 
 -- Create indexes for better query performance
 CREATE INDEX idx_tasks_user_id ON public.tasks(user_id);
+CREATE INDEX idx_tasks_user_order ON public.tasks(user_id, "order");
 CREATE INDEX idx_pomodoro_sessions_user_id ON public.pomodoro_sessions(user_id);
 CREATE INDEX idx_pomodoro_sessions_started_at ON public.pomodoro_sessions(started_at);
+
+-- Safe migration for existing projects created before "order" was introduced.
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS "order" INTEGER DEFAULT 0;
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
@@ -41,7 +41,10 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
 
-        if (!user) return
+        if (!user) {
+            setIsLoading(false)
+            return
+        }
 
         let query = supabase
             .from('pomodoro_sessions')
@@ -68,11 +71,19 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
         let error = null
 
         if (searchQuery.trim()) {
-            const { data: searchData, error: searchError } = await supabase
+            let searchQueryBuilder = supabase
                 .from('pomodoro_sessions')
                 .select('*, tasks!inner(title)')
                 .eq('user_id', user.id)
                 .eq('completed', true)
+
+            if (filterMode === 'focus') {
+                searchQueryBuilder = searchQueryBuilder.eq('mode', 'focus')
+            } else if (filterMode === 'rest') {
+                searchQueryBuilder = searchQueryBuilder.in('mode', ['shortBreak', 'longBreak'])
+            }
+
+            const { data: searchData, error: searchError } = await searchQueryBuilder
                 .ilike('tasks.title', `%${searchQuery}%`)
                 .order('started_at', { ascending: false })
                 .range(rangeStart, rangeEnd)
@@ -211,7 +222,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                             {t('return')}
                         </Link>
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                            📜 {t('historyTitle')}
+                            {t('historyTitle')}
                         </h1>
                     </div>
                     <button
@@ -338,4 +349,3 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
         </div>
     )
 }
-

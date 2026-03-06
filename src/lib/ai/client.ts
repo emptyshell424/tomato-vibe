@@ -1,4 +1,4 @@
-﻿interface AiChatCompletionResponse {
+interface AiChatCompletionResponse {
   choices?: Array<{
     message?: {
       content?: string
@@ -17,17 +17,51 @@ interface AiJsonRequest {
 
 type AiProvider = 'deepseek' | 'gemini' | 'openai'
 
+const PROVIDER_DEFAULT_MODEL: Record<AiProvider, string> = {
+  deepseek: 'deepseek-chat',
+  gemini: 'gemini-3-flash-preview',
+  openai: 'gpt-4o-mini',
+}
+
+const PROVIDER_DEFAULT_BASE_URL: Record<AiProvider, string> = {
+  deepseek: 'https://api.deepseek.com/v1',
+  gemini: 'https://generativelanguage.googleapis.com/v1beta/openai',
+  openai: 'https://api.openai.com/v1',
+}
+
+const PROVIDER_API_KEY_ENV: Record<AiProvider, string> = {
+  deepseek: 'DEEPSEEK_API_KEY',
+  gemini: 'GOOGLE_API_KEY',
+  openai: 'OPENAI_API_KEY',
+}
+
+function resolveProvider() {
+  const raw = process.env.AI_PROVIDER
+  if (raw === 'gemini' || raw === 'openai' || raw === 'deepseek') {
+    return raw
+  }
+  return 'deepseek'
+}
+
+function getProviderApiKey(provider: AiProvider) {
+  switch (provider) {
+    case 'gemini':
+      return process.env.GOOGLE_API_KEY
+    case 'openai':
+      return process.env.OPENAI_API_KEY
+    default:
+      return process.env.DEEPSEEK_API_KEY
+  }
+}
+
 function getAiConfig() {
-  const provider = (process.env.AI_PROVIDER as AiProvider | undefined) || 'deepseek'
-  const model = process.env.AI_MODEL || (provider === 'gemini' ? 'gemini-3-flash-preview' : 'deepseek-chat')
-  const baseUrl = (process.env.AI_BASE_URL || (provider === 'gemini'
-    ? 'https://generativelanguage.googleapis.com/v1beta/openai'
-    : 'https://api.deepseek.com/v1')).replace(/\/$/, '')
-  const apiKey = provider === 'gemini' ? process.env.GOOGLE_API_KEY : process.env.DEEPSEEK_API_KEY
+  const provider = resolveProvider()
+  const model = process.env.AI_MODEL || PROVIDER_DEFAULT_MODEL[provider]
+  const baseUrl = (process.env.AI_BASE_URL || PROVIDER_DEFAULT_BASE_URL[provider]).replace(/\/$/, '')
+  const apiKey = getProviderApiKey(provider)
 
   if (!apiKey) {
-    const keyName = provider === 'gemini' ? 'GOOGLE_API_KEY' : 'DEEPSEEK_API_KEY'
-    throw new Error(`${keyName} is not configured`)
+    throw new Error(`${PROVIDER_API_KEY_ENV[provider]} is not configured`)
   }
 
   return { apiKey, model, baseUrl }
@@ -81,11 +115,6 @@ export async function requestAiJson<T>({
 }
 
 export function hasAiConfig() {
-  const provider = (process.env.AI_PROVIDER as AiProvider | undefined) || 'deepseek'
-  return provider === 'gemini'
-    ? Boolean(process.env.GOOGLE_API_KEY)
-    : Boolean(process.env.DEEPSEEK_API_KEY)
+  const provider = resolveProvider()
+  return Boolean(getProviderApiKey(provider))
 }
-
-
-
