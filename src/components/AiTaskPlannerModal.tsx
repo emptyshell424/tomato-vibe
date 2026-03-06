@@ -104,15 +104,15 @@ export function AiTaskPlannerModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-md flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-md flex items-center justify-center overflow-y-auto p-4" onClick={onClose}>
       <div
-        className="relative w-full max-w-2xl rounded-[32px] border border-white/20 bg-white/90 dark:bg-gray-900/90 shadow-2xl overflow-hidden"
+        className="relative my-auto w-full max-w-2xl max-h-[calc(100dvh-2rem)] rounded-[32px] border border-white/20 bg-white/90 dark:bg-gray-900/90 shadow-2xl overflow-hidden"
         onClick={event => event.stopPropagation()}
       >
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-br from-tomato/20 via-orange-400/10 to-transparent pointer-events-none" />
         <div className="absolute -top-14 -right-8 h-40 w-40 rounded-full bg-orange-400/20 blur-3xl pointer-events-none" />
 
-        <div className="relative p-6 sm:p-8 space-y-6">
+        <div className="relative max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 sm:p-8 space-y-6">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 rounded-full bg-tomato/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-tomato">
@@ -256,6 +256,7 @@ export function AiTaskPlannerModal({
     </div>
   )
 }
+
 
 
 
