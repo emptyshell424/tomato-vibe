@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -64,7 +64,7 @@ export function Heatmap({ data }: HeatmapProps) {
             <div className="flex gap-1 min-w-fit">
                 {weeks.map((week, wIndex) => (
                     <div key={wIndex} className="flex flex-col gap-1">
-                        {week.map((day, dIndex) => (
+                        {week.map(day => (
                             <div
                                 key={day.date}
                                 onClick={() => handleDayClick(day.date)}
@@ -87,3 +87,4 @@ export function Heatmap({ data }: HeatmapProps) {
         </div>
     )
 }
+

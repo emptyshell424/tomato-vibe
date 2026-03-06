@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { PomodoroMode } from '@/types'
@@ -97,56 +97,16 @@ export function usePomodoroTimer({
       try {
         audio.pause()
         audio.currentTime = 0
-      } catch (e) {
+      } catch {
         // Ignore errors during silent stop
       }
     }
   }, [])
 
-  const playCompletionSound = useCallback((type: 'bell' | 'digital' | 'wood', volume: number) => {
-    if (typeof window === 'undefined') return
-
-    const tryPlay = (url: string, isFallback: boolean = false) => {
-      stopAlarm()
-      const audio = new Audio(url)
-      audio.volume = volume
-      alarmAudioRef.current = audio
-
-      const playPromise = audio.play()
-      if (playPromise !== undefined) {
-        setIsAlarmPlaying(true)
-        playPromise.catch((error) => {
-          if (!isFallback) {
-            console.warn(`Primary audio ${type} failed, trying fallback. Error:`, error.name)
-            // Fallback to data URI for bell, or synthesized for others
-            if (type === 'bell') tryPlay(BASE64_BELL, true)
-            else playSynthesizedSound(type, volume)
-          } else {
-            console.error('Fallback audio also failed:', error)
-            playSynthesizedSound(type, volume)
-          }
-        })
-
-        audio.onended = () => {
-          setIsAlarmPlaying(false)
-          alarmAudioRef.current = null
-        }
-      }
-    }
-
-    try {
-      tryPlay(SOUND_URLS[type])
-    } catch (e) {
-      console.warn('Audio initialization failed, using fallback', e)
-      if (type === 'bell') tryPlay(BASE64_BELL, true)
-      else playSynthesizedSound(type, volume)
-    }
-  }, [stopAlarm])
-
-  const playSynthesizedSound = (type: string, volume: number) => {
+  function playSynthesizedSound(type: 'bell' | 'digital' | 'wood', volume: number) {
     if (typeof window === 'undefined') return
     try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+      const AudioCtx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
       if (!AudioCtx) return
 
       const ctx = new AudioCtx()
@@ -179,11 +139,49 @@ export function usePomodoroTimer({
         osc.start(now)
         osc.stop(now + 0.3)
       }
-    } catch (e) {
-      console.error('Synthesized audio failed:', e)
+    } catch (error) {
+      console.error('Synthesized audio failed:', error)
     }
   }
 
+  const playCompletionSound = useCallback((type: 'bell' | 'digital' | 'wood', volume: number) => {
+    if (typeof window === 'undefined') return
+
+    const tryPlay = (url: string, isFallback: boolean = false) => {
+      stopAlarm()
+      const audio = new Audio(url)
+      audio.volume = volume
+      alarmAudioRef.current = audio
+
+      const playPromise = audio.play()
+      if (playPromise !== undefined) {
+        setIsAlarmPlaying(true)
+        playPromise.catch((error) => {
+          if (!isFallback) {
+            console.warn(`Primary audio ${type} failed, trying fallback. Error:`, error.name)
+            if (type === 'bell') tryPlay(BASE64_BELL, true)
+            else playSynthesizedSound(type, volume)
+          } else {
+            console.error('Fallback audio also failed:', error)
+            playSynthesizedSound(type, volume)
+          }
+        })
+
+        audio.onended = () => {
+          setIsAlarmPlaying(false)
+          alarmAudioRef.current = null
+        }
+      }
+    }
+
+    try {
+      tryPlay(SOUND_URLS[type])
+    } catch (error) {
+      console.warn('Audio initialization failed, using fallback', error)
+      if (type === 'bell') tryPlay(BASE64_BELL, true)
+      else playSynthesizedSound(type, volume)
+    }
+  }, [stopAlarm])
   const getDurationForMode = useCallback((currentMode: PomodoroMode) => {
     switch (currentMode) {
       case 'focus':
@@ -299,3 +297,7 @@ export function usePomodoroTimer({
     formatTime,
   }
 }
+
+
+
+

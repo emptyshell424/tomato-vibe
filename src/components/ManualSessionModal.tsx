@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { X } from 'lucide-react'
@@ -53,7 +53,7 @@ export function ManualSessionModal({ isOpen, onClose, onSave }: ManualSessionMod
             onClose()
         } catch (error) {
             console.error('Error creating session:', error)
-            alert(t('errorSaving' as any) || 'Error saving session')
+            alert(t('errorSaving') || 'Error saving session')
         } finally {
             setLoading(false)
         }
@@ -64,7 +64,7 @@ export function ManualSessionModal({ isOpen, onClose, onSave }: ManualSessionMod
             <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md shadow-xl border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        {t('addRecord' as any) || 'Add Record'}
+                        {t('addRecord') || 'Add Record'}
                     </h2>
                     <button
                         onClick={onClose}
@@ -77,7 +77,7 @@ export function ManualSessionModal({ isOpen, onClose, onSave }: ManualSessionMod
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {t('date' as any) || 'Date'}
+                            {t('date') || 'Date'}
                         </label>
                         <input
                             type="date"
@@ -91,7 +91,7 @@ export function ManualSessionModal({ isOpen, onClose, onSave }: ManualSessionMod
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {t('startTime' as any) || 'Start Time'}
+                                {t('startTime') || 'Start Time'}
                             </label>
                             <input
                                 type="time"
@@ -103,7 +103,7 @@ export function ManualSessionModal({ isOpen, onClose, onSave }: ManualSessionMod
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {t('durationMinutes' as any) || 'Duration (min)'}
+                                {t('durationMinutes') || 'Duration (min)'}
                             </label>
                             <input
                                 type="number"
@@ -118,16 +118,16 @@ export function ManualSessionModal({ isOpen, onClose, onSave }: ManualSessionMod
 
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {t('mode' as any) || 'Mode'}
+                            {t('mode') || 'Mode'}
                         </label>
                         <select
                             value={formData.mode}
                             onChange={e => setFormData({ ...formData, mode: e.target.value })}
                             className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none"
                         >
-                            <option value="focus">{t('focus' as any) || 'Focus'}</option>
-                            <option value="shortBreak">{t('shortBreak' as any) || 'Short Break'}</option>
-                            <option value="longBreak">{t('longBreak' as any) || 'Long Break'}</option>
+                            <option value="focus">{t('focus') || 'Focus'}</option>
+                            <option value="shortBreak">{t('shortBreak') || 'Short Break'}</option>
+                            <option value="longBreak">{t('longBreak') || 'Long Break'}</option>
                         </select>
                     </div>
 
@@ -136,10 +136,11 @@ export function ManualSessionModal({ isOpen, onClose, onSave }: ManualSessionMod
                         disabled={loading}
                         className="w-full py-2.5 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
                     >
-                        {loading ? (t('saving' as any) || 'Saving...') : (t('save' as any) || 'Save')}
+                        {loading ? (t('saving') || 'Saving...') : (t('save') || 'Save')}
                     </button>
                 </form>
             </div>
         </div>
     )
 }
+

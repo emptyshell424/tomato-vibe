@@ -1,4 +1,4 @@
-export type PomodoroMode = 'focus' | 'shortBreak' | 'longBreak'
+﻿export type PomodoroMode = 'focus' | 'shortBreak' | 'longBreak'
 
 export interface PomodoroSettings {
   focusDuration: number // minutes
@@ -48,4 +48,28 @@ export interface User {
 export interface ActiveTaskState {
   taskId: string | null
   taskTitle: string | null
+}
+
+export interface AiPlannedTask {
+  title: string
+  estimatedPomodoros: number
+  reasoning: string
+}
+
+export interface AiTaskPlan {
+  overview: string
+  totalPomodoros: number
+  subtasks: AiPlannedTask[]
+
+}
+
+export type AiInsightPeriod = 'weekly' | 'monthly'
+
+export interface AiInsight {
+  period: AiInsightPeriod
+  summary: string
+  peakTimes: string[]
+  lowTimes: string[]
+  suggestions: string[]
+  highlights: string[]
 }

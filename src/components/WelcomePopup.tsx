@@ -1,19 +1,14 @@
+﻿import { useState } from 'react'
 
-import { useState, useEffect } from 'react'
-
-import { X, Timer, CheckSquare, Music, BarChart2 } from 'lucide-react'
+import { X, Timer, CheckSquare, Music } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export function WelcomePopup() {
     const { t } = useLanguage()
-    const [isOpen, setIsOpen] = useState(false)
-
-    useEffect(() => {
-        const hasSeenWelcome = localStorage.getItem('hasSeenWelcome')
-        if (!hasSeenWelcome) {
-            setIsOpen(true)
-        }
-    }, [])
+    const [isOpen, setIsOpen] = useState(() => {
+        if (typeof window === 'undefined') return false
+        return !localStorage.getItem('hasSeenWelcome')
+    })
 
     const handleClose = () => {
         setIsOpen(false)

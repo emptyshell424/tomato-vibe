@@ -1,4 +1,4 @@
-import { createClient } from './client'
+﻿import { createClient } from './client'
 import { Task } from '@/types'
 
 export async function getTasks(): Promise<Task[]> {
@@ -54,7 +54,9 @@ export async function updateTask(id: string, updates: Partial<Task>): Promise<bo
 
   if (!user) return false
 
-  const { id: _, user_id: __, created_at: ___, ...dbUpdates } = updates
+  const dbUpdates = Object.fromEntries(
+    Object.entries(updates).filter(([key]) => !['id', 'user_id', 'created_at'].includes(key))
+  ) as Partial<Task>
 
   const { error } = await supabase
     .from('tasks')
@@ -92,3 +94,5 @@ export async function deleteTask(id: string): Promise<boolean> {
 
   return true
 }
+
+

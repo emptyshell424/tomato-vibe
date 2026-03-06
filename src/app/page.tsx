@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import dynamic from 'next/dynamic'
 import { useState, useEffect, useCallback, useRef } from 'react'
@@ -34,16 +34,20 @@ import { Sun, Moon, LogOut, User as UserIcon, BarChart2, History, Maximize2, Min
 import Link from 'next/link'
 import { clsx } from 'clsx'
 import { getTasks, createTask as saveTaskToDB, updateTask as updateTaskInDB, deleteTask as deleteTaskFromDB } from '@/lib/supabase/tasks'
-import { saveSession } from '@/lib/supabase/sessions'
 
 
 function PomodoroApp() {
   const { t } = useLanguage()
-  const { user, loading: authLoading, signOut } = useAuth()
+  const { user, signOut } = useAuth()
   const { settings, updateSettings, resetToDefaults } = usePomodoroSettings()
 
   const [tasks, setTasks] = useState<Task[]>([])
-  const [isDark, setIsDark] = useState<boolean | null>(null)
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    const savedTheme = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    return savedTheme === 'dark' || (!savedTheme && prefersDark)
+  })
   const [showAuth, setShowAuth] = useState(false)
   const [isFocusMode, setIsFocusMode] = useState(false)
 
@@ -63,6 +67,24 @@ function PomodoroApp() {
     setActiveTask
   } = useTimer()
 
+  const handleUpdateTask = useCallback(async (id: string, updates: Partial<Task>) => {
+    const task = tasks.find(t => t.id === id)
+    if (!task) return
+
+    const previousTask = { ...task }
+    setTasks(prev =>
+      prev.map(t =>
+        t.id === id ? { ...t, ...updates, updated_at: new Date().toISOString() } : t
+      )
+    )
+
+    if (user) {
+      const success = await updateTaskInDB(id, updates)
+      if (!success) {
+        setTasks(prev => prev.map(t => t.id === id ? previousTask : t))
+      }
+    }
+  }, [tasks, user])
   // Handle task completion increment when a focus session ends
   const prevSessions = useRef(completedSessions)
   useEffect(() => {
@@ -71,12 +93,14 @@ function PomodoroApp() {
         const task = tasks.find(t => t.id === activeTask.id)
         if (task) {
           const newCount = (task.completed_pomodoros || 0) + 1
-          handleUpdateTask(activeTask.id, { completed_pomodoros: newCount })
+          setTimeout(() => {
+            handleUpdateTask(activeTask.id, { completed_pomodoros: newCount })
+          }, 0)
         }
       }
     }
     prevSessions.current = completedSessions
-  }, [completedSessions, mode, activeTask, tasks])
+  }, [completedSessions, mode, activeTask, tasks, handleUpdateTask])
 
   // White Noise Integration - Must be after timer to access state
   useWhiteNoise({
@@ -103,20 +127,8 @@ function PomodoroApp() {
     setTasks(data)
   }, [])
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDark(true)
-    } else {
-      setIsDark(false)
-    }
-  }, [])
 
   useEffect(() => {
-    if (isDark === null) return
-
     if (isDark) {
       document.documentElement.classList.add('dark')
       localStorage.setItem('theme', 'dark')
@@ -140,7 +152,7 @@ function PomodoroApp() {
     }
   }, [user, loadTasks])
 
-  const handleAddTask = async (title: string) => {
+  const handleAddTask = async (title: string, estimatedPomodoros?: number) => {
     const tempTaskId = crypto.randomUUID()
     const tempTask: Task = {
       id: tempTaskId,
@@ -155,7 +167,10 @@ function PomodoroApp() {
     setTasks(prev => [tempTask, ...prev])
 
     if (user) {
-      const savedTask = await saveTaskToDB({ title })
+      const savedTask = await saveTaskToDB({
+        title,
+        estimated_pomodoros: estimatedPomodoros,
+      })
       if (savedTask) {
         setTasks(prev => prev.map(t => t.id === tempTaskId ? savedTask : t))
       } else {
@@ -199,24 +214,6 @@ function PomodoroApp() {
     }
   }
 
-  const handleUpdateTask = async (id: string, updates: Partial<Task>) => {
-    const task = tasks.find(t => t.id === id)
-    if (!task) return
-
-    const previousTask = { ...task }
-    setTasks(prev =>
-      prev.map(t =>
-        t.id === id ? { ...t, ...updates, updated_at: new Date().toISOString() } : t
-      )
-    )
-
-    if (user) {
-      const success = await updateTaskInDB(id, updates)
-      if (!success) {
-        setTasks(prev => prev.map(t => t.id === id ? previousTask : t))
-      }
-    }
-  }
 
   const handleReorderTasks = useCallback((reorderedTasks: Task[]) => {
     setTasks(reorderedTasks)
@@ -434,3 +431,8 @@ export default function Home() {
     <PomodoroApp />
   )
 }
+
+
+
+
+

@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 
-import { Clock, Calendar, Target, TrendingUp, Award, Zap, Flame, Sun, Moon, CheckCircle } from 'lucide-react'
+import { Clock, Calendar, Target, TrendingUp, Award, Zap, Flame, Sun, Moon, CheckCircle, LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 import { Heatmap } from '@/components/Heatmap'
+import { AiInsightsPanel } from '@/components/AiInsightsPanel'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 import { useRouter } from 'next/navigation'
@@ -129,7 +130,7 @@ export function StatsView({ stats }: StatsViewProps) {
         },
     ]
 
-    const achievementConfig: Record<string, { icon: any, color: string, bg: string, label: string }> = {
+    const achievementConfig: Record<string, { icon: LucideIcon, color: string, bg: string, label: string }> = {
         earlyBird: {
             icon: Sun,
             color: 'text-amber-500',
@@ -256,8 +257,12 @@ export function StatsView({ stats }: StatsViewProps) {
                         </h2>
                         <Heatmap data={stats.heatmapData} />
                     </section>
+
+                    <AiInsightsPanel />
                 </main>
             </div>
         </div>
     )
 }
+
+

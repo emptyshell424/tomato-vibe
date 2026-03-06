@@ -1,6 +1,6 @@
-import { clsx } from 'clsx'
+﻿import { clsx } from 'clsx'
 import { PomodoroMode } from '@/types'
-import { Focus, Coffee, Battery } from 'lucide-react'
+import { Focus, Coffee, Battery, LucideIcon } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 interface ModeSelectorProps {
@@ -19,7 +19,7 @@ export function ModeSelector({
   isRunning,
 }: ModeSelectorProps) {
   const { t } = useLanguage()
-  const modes: { id: PomodoroMode; label: string; icon: any }[] = [
+  const modes: { id: PomodoroMode; label: string; icon: LucideIcon }[] = [
     { id: 'focus', label: t('focus'), icon: Focus },
     { id: 'shortBreak', label: t('shortBreak'), icon: Coffee },
     { id: 'longBreak', label: t('longBreak'), icon: Battery },

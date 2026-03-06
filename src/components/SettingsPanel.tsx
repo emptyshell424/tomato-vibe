@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { X, Settings, Volume2, Music, Zap, Volume1, Globe } from 'lucide-react'
+﻿import { useState } from 'react'
+import { X, Settings, Volume2, Music, Zap,  Globe } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { PomodoroSettings } from '@/types'
 
@@ -189,7 +189,7 @@ export function SettingsPanel({
                     </label>
                     <select
                       value={settings.soundType}
-                      onChange={e => onSettingsChange({ soundType: e.target.value as any })}
+                      onChange={e => onSettingsChange({ soundType: e.target.value as PomodoroSettings['soundType'] })}
                       className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                                  bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white
                                  outline-none focus:ring-2 focus:ring-tomato"
@@ -230,7 +230,7 @@ export function SettingsPanel({
                     </label>
                     <select
                       value={settings.whiteNoiseType}
-                      onChange={e => onSettingsChange({ whiteNoiseType: e.target.value as any })}
+                      onChange={e => onSettingsChange({ whiteNoiseType: e.target.value as PomodoroSettings['whiteNoiseType'] })}
                       className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                                  bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white
                                  outline-none focus:ring-2 focus:ring-blue-500"
@@ -307,3 +307,5 @@ export function SettingsPanel({
     </>
   )
 }
+
+

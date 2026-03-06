@@ -1,4 +1,20 @@
-import { createClient } from './server'
+﻿import { createClient } from './server'
+
+interface FocusSessionRow {
+    started_at: string
+    duration: number
+}
+
+interface HistorySession {
+    id: string
+    created_at: string
+    user_id: string
+    duration: number
+    mode: string
+    started_at: string
+    completed: boolean
+    tasks?: { title: string } | null
+}
 
 export async function getFullStats() {
     const supabase = await createClient()
@@ -26,7 +42,6 @@ export async function getFullStats() {
         completedTasks,
         yearSessions
     ] = await Promise.all([
-        // Today (Focus Only)
         supabase
             .from('pomodoro_sessions')
             .select('duration')
@@ -34,7 +49,6 @@ export async function getFullStats() {
             .eq('completed', true)
             .eq('mode', 'focus')
             .gte('started_at', today.toISOString()),
-        // Yesterday (Focus Only)
         supabase
             .from('pomodoro_sessions')
             .select('duration')
@@ -43,7 +57,6 @@ export async function getFullStats() {
             .eq('mode', 'focus')
             .gte('started_at', yesterday.toISOString())
             .lt('started_at', today.toISOString()),
-        // Week (Focus Only)
         supabase
             .from('pomodoro_sessions')
             .select('duration')
@@ -51,7 +64,6 @@ export async function getFullStats() {
             .eq('completed', true)
             .eq('mode', 'focus')
             .gte('started_at', weekAgo.toISOString()),
-        // Tasks Stats
         supabase
             .from('tasks')
             .select('id', { count: 'exact' })
@@ -61,7 +73,6 @@ export async function getFullStats() {
             .select('id', { count: 'exact' })
             .eq('user_id', user.id)
             .eq('completed', true),
-        // Year Data (Focus Only) - For Heatmap, Streak, & Badges
         supabase
             .from('pomodoro_sessions')
             .select('started_at, duration')
@@ -71,19 +82,16 @@ export async function getFullStats() {
             .gte('started_at', yearAgo.toISOString())
     ])
 
-    // 1. Basic Stats Calculation
     const todayMinutes = (todaySessions.data || []).reduce((acc, s) => acc + s.duration / 60, 0)
     const yesterdayMinutes = (yesterdaySessions.data || []).reduce((acc, s) => acc + s.duration / 60, 0)
     const weekMinutes = (weekSessions.data || []).reduce((acc, s) => acc + s.duration / 60, 0)
-    const totalMinutes = (yearSessions.data || []).reduce((acc, s: any) => acc + s.duration / 60, 0)
+    const sessions: FocusSessionRow[] = yearSessions.data ?? []
+    const totalMinutes = sessions.reduce((acc, s) => acc + s.duration / 60, 0)
 
-    // 2. Heatmap & Streak Data Processing
     const heatmapDataMap = new Map<string, number>()
     const uniqueDates = new Set<string>()
 
-    const sessions = yearSessions.data || []
-
-    sessions.forEach((session: any) => {
+    sessions.forEach((session) => {
         const date = session.started_at.split('T')[0]
         const mins = session.duration / 60
         heatmapDataMap.set(date, (heatmapDataMap.get(date) || 0) + mins)
@@ -95,18 +103,15 @@ export async function getFullStats() {
         value
     }))
 
-    // 3. Streak Calculation
     let streak = 0
     const todayStr = today.toISOString().split('T')[0]
     const yesterdayStr = yesterday.toISOString().split('T')[0]
-
-    // Check if streak is active (has data for today or yesterday)
     let currentDateStr: string | null = uniqueDates.has(todayStr) ? todayStr : (uniqueDates.has(yesterdayStr) ? yesterdayStr : null)
 
     if (currentDateStr) {
         streak = 1
-        while (true) {
-            const checkDate: Date = new Date(currentDateStr!)
+        while (currentDateStr) {
+            const checkDate: Date = new Date(currentDateStr)
             checkDate.setDate(checkDate.getDate() - 1)
             const prevDateStr: string = checkDate.toISOString().split('T')[0]
             if (uniqueDates.has(prevDateStr)) {
@@ -118,18 +123,15 @@ export async function getFullStats() {
         }
     }
 
-    // 4. Achievement Calculation
     const achievements: string[] = []
 
-    // Early Bird (5-9 AM)
-    const hasEarlyBird = sessions.some((s: any) => {
+    const hasEarlyBird = sessions.some((s) => {
         const h = new Date(s.started_at).getHours()
         return h >= 5 && h < 9
     })
     if (hasEarlyBird) achievements.push('earlyBird')
 
-    // Night Owl (22-02) - Note: 0-2 is next day technically but simple check suits
-    const hasNightOwl = sessions.some((s: any) => {
+    const hasNightOwl = sessions.some((s) => {
         const h = new Date(s.started_at).getHours()
         return h >= 22 || h < 2
     })
@@ -161,9 +163,7 @@ export async function getHistorySessions(dateFilter?: string) {
         .eq('completed', true)
 
     if (dateFilter) {
-        // Filter by specific day (00:00 to 23:59)
         const startDate = new Date(dateFilter)
-        // Validate date
         if (!isNaN(startDate.getTime())) {
             const endDate = new Date(startDate)
             endDate.setDate(endDate.getDate() + 1)
@@ -183,5 +183,7 @@ export async function getHistorySessions(dateFilter?: string) {
         return []
     }
 
-    return sessions || []
+    return (sessions || []) as HistorySession[]
 }
+
+

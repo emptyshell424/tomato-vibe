@@ -1,10 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { createClient } from '@/lib/supabase/client'
-import { Filter, Search, Plus, Trash2, Loader2, Calendar } from 'lucide-react'
+import { Search, Plus, Trash2, Loader2, Calendar } from 'lucide-react'
 import { ManualSessionModal } from './ManualSessionModal'
 
 interface Session {
@@ -64,7 +64,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
         const rangeStart = currentLength
         const rangeEnd = currentLength + PAGE_SIZE - 1
 
-        let data: any[] | null = null
+        let data: Session[] | null = null
         let error = null
 
         if (searchQuery.trim()) {
@@ -155,7 +155,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
     }, [fetchSessions])
 
     const handleDelete = async (id: string) => {
-        if (!confirm(t('confirmDelete' as any) || 'Are you sure you want to delete this record?')) return
+        if (!confirm(t('confirmDelete') || 'Are you sure you want to delete this record?')) return
 
         const supabase = createClient()
         const { error } = await supabase
@@ -165,7 +165,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
 
         if (error) {
             console.error('Error deleting session:', error)
-            alert(t('errorDeleting' as any) || 'Error deleting session')
+            alert(t('errorDeleting') || 'Error deleting session')
         } else {
             setSessions(prev => prev.filter(s => s.id !== id))
         }
@@ -208,10 +208,10 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                             className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400
                        hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                         >
-                            {t('return' as any)}
+                            {t('return')}
                         </Link>
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                            📜 {t('historyTitle' as any)}
+                            📜 {t('historyTitle')}
                         </h1>
                     </div>
                     <button
@@ -219,7 +219,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                         className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
                     >
                         <Plus className="w-4 h-4" />
-                        {t('addRecord' as any) || 'Add Record'}
+                        {t('addRecord') || 'Add Record'}
                     </button>
                 </header>
 
@@ -229,7 +229,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
-                            placeholder={t('searchTask' as any) || 'Search tasks...'}
+                            placeholder={t('searchTask') || 'Search tasks...'}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-red-500/50"
@@ -243,7 +243,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                                 : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
-                            {t('all' as any) || 'All'}
+                            {t('all') || 'All'}
                         </button>
                         <div className="w-px bg-gray-200 dark:bg-gray-700" />
                         <button
@@ -253,7 +253,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                                 : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
-                            {t('focus' as any)}
+                            {t('focus')}
                         </button>
                         <div className="w-px bg-gray-200 dark:bg-gray-700" />
                         <button
@@ -263,7 +263,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                                 : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
-                            {t('rest' as any) || 'Rest'}
+                            {t('rest') || 'Rest'}
                         </button>
                     </div>
                 </div>
@@ -271,7 +271,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                 <main>
                     {sessions.length === 0 && !isLoading ? (
                         <div className="text-center py-12 text-gray-500">
-                            {t('noHistory' as any)}
+                            {t('noHistory')}
                         </div>
                     ) : (
                         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
@@ -305,7 +305,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                                             <button
                                                 onClick={() => handleDelete(session.id)}
                                                 className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
-                                                title={t('delete' as any) || 'Delete'}
+                                                title={t('delete') || 'Delete'}
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
@@ -321,7 +321,7 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
                         <div ref={observerTarget} className="mt-6 flex justify-center py-4">
                             <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                <span>{t('loading' as any) || 'Loading...'}</span>
+                                <span>{t('loading') || 'Loading...'}</span>
                             </div>
                         </div>
                     )}
@@ -338,3 +338,4 @@ export function HistoryView({ sessions: initialSessions }: HistoryViewProps) {
         </div>
     )
 }
+

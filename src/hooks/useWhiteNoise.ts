@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 export type WhiteNoiseType = 'none' | 'rain' | 'cafe'
 
@@ -56,7 +56,7 @@ export function useWhiteNoise({ type, volume, enabled }: UseWhiteNoiseProps) {
             }
             audioRef.current = null
         }
-    }, [type, enabled])
+    }, [type, enabled, volume])
 
     useEffect(() => {
         if (audioRef.current) {
@@ -66,3 +66,4 @@ export function useWhiteNoise({ type, volume, enabled }: UseWhiteNoiseProps) {
 
     return {}
 }
+

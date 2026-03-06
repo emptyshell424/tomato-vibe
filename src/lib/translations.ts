@@ -1,4 +1,4 @@
-export type Language = 'en' | 'zh';
+﻿export type Language = 'en' | 'zh';
 
 export const translations = {
     en: {
@@ -81,6 +81,33 @@ export const translations = {
         relaxed: "Relaxed",
         noEstimate: "No est",
         est: "EST:",
+        aiPlannerBadge: "AI Plan",
+        aiPlannerTitle: "Smart Task Planning",
+        aiPlannerSubtitle: "Turn one vague goal into a focused execution plan with concrete subtasks and Pomodoro estimates.",
+        aiPlannerInputLabel: "Large task or goal",
+        aiPlannerPlaceholder: "Example: Write my graduation thesis, prepare for IELTS, finish a landing page redesign...",
+        aiPlannerHint: "AI suggestions are a starting point. Review and import only what is useful.",
+        aiPlannerGenerate: "Generate Plan",
+        aiPlannerGenerating: "Planning...",
+        aiPlannerOverview: "Plan Summary",
+        aiPlannerTotal: "Suggested Total",
+        aiPlannerRegenerate: "Regenerate",
+        aiPlannerImportSelected: "Import Selected",
+        aiPlannerEmpty: "Describe a larger goal, then let AI split it into smaller tasks.",
+        aiPlannerTaskTooShort: "Please enter a more specific task.",
+        aiPlannerSelectAtLeastOne: "Select at least one subtask to import.",
+        aiPlannerErrorGeneric: "AI planning is temporarily unavailable.",
+        aiInsightsTitle: "AI Productivity Insight",
+        aiInsightsSubtitle: "AI reads your focus patterns and highlights your best windows and weaker spots.",
+        aiInsightsWeekly: "Weekly",
+        aiInsightsMonthly: "Monthly",
+        aiInsightsLoading: "Analyzing focus data...",
+        aiInsightsError: "Unable to load AI insights.",
+        aiInsightsEmpty: "Complete more focus sessions to unlock AI insights.",
+        aiInsightsPeak: "Peak Windows",
+        aiInsightsLow: "Low Energy Windows",
+        aiInsightsSuggestions: "Suggestions",
+        aiInsightsHighlights: "Highlights",
 
         // Sedentary
         sedentaryTitle: "Time to Move!",
@@ -113,6 +140,7 @@ export const translations = {
         brandName: "Tomato Vibe",
         loginRegister: "Login / Register",
         enterFocusMode: "Enter Focus Mode",
+        aiPlannerLocked: "Sign in to use AI planning",
         todaysPlan: "Today's Plan",
         task: "Task",
         tasks: "Tasks",
@@ -147,6 +175,8 @@ export const translations = {
         noHistory: "No focus sessions yet, start focusing!",
         toggleTheme: "Toggle Theme",
         all: "All",
+        rest: "Rest",
+        mode: "Mode",
         addRecord: "Add Record",
         searchTask: "Search tasks...",
         delete: "Delete",
@@ -241,6 +271,33 @@ export const translations = {
         relaxed: "Relaxed",
         noEstimate: "无预估",
         est: "预估:",
+        aiPlannerBadge: "AI 规划",
+        aiPlannerTitle: "智能任务拆解",
+        aiPlannerSubtitle: "把一个模糊的大目标拆成可执行的小步骤，并给出更保守的番茄钟预估。",
+        aiPlannerInputLabel: "输入大任务或目标",
+        aiPlannerPlaceholder: "例如：写毕业论文、准备雅思、完成一个落地页改版……",
+        aiPlannerHint: "AI 结果只是起点。你可以筛选后再导入到任务列表。",
+        aiPlannerGenerate: "生成计划",
+        aiPlannerGenerating: "规划中...",
+        aiPlannerOverview: "规划摘要",
+        aiPlannerTotal: "建议总量",
+        aiPlannerRegenerate: "重新生成",
+        aiPlannerImportSelected: "导入选中任务",
+        aiPlannerEmpty: "先描述一个更大的目标，再让 AI 帮你拆成可执行任务。",
+        aiPlannerTaskTooShort: "请先输入更具体的任务描述。",
+        aiPlannerSelectAtLeastOne: "请至少选择一个子任务后再导入。",
+        aiPlannerErrorGeneric: "AI 规划暂时不可用，请稍后再试。",
+        aiInsightsTitle: "AI 专注力分析",
+        aiInsightsSubtitle: "AI 根据你的专注记录，找出最佳时段和低谷时段，并给出建议。",
+        aiInsightsWeekly: "周报",
+        aiInsightsMonthly: "月报",
+        aiInsightsLoading: "正在分析专注数据...",
+        aiInsightsError: "AI 分析暂时不可用。",
+        aiInsightsEmpty: "完成更多专注记录后可生成分析报告。",
+        aiInsightsPeak: "高效时段",
+        aiInsightsLow: "低效时段",
+        aiInsightsSuggestions: "建议",
+        aiInsightsHighlights: "亮点",
 
         // Sedentary
         sedentaryTitle: "该活动一下了！",
@@ -273,6 +330,7 @@ export const translations = {
         brandName: "洋柿子氛围",
         loginRegister: "登录 / 注册",
         enterFocusMode: "进入专注模式",
+        aiPlannerLocked: "登录后可使用 AI 规划",
         todaysPlan: "今日计划",
         task: "任务",
         tasks: "任务",
@@ -307,6 +365,8 @@ export const translations = {
         noHistory: "还没有完成任何洋柿子氛围，开始专注吧！",
         toggleTheme: "日间夜间切换",
         all: "全部",
+        rest: "休息",
+        mode: "模式",
         addRecord: "手动补录",
         searchTask: "搜索任务...",
         delete: "删除",
@@ -322,3 +382,8 @@ export const translations = {
         save: "保存",
     }
 };
+
+
+
+
+

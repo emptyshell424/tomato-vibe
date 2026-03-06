@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { memo, useRef, useEffect, useState } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
@@ -32,7 +32,6 @@ export const TaskItem = memo(function TaskItem({
     onEditSave,
     onEditCancel,
     onEditStart,
-
     onUpdateEstimate,
 }: TaskItemProps) {
     const { t } = useLanguage()
@@ -41,10 +40,15 @@ export const TaskItem = memo(function TaskItem({
 
     useEffect(() => {
         if (isEditing) {
-            setLocalTitle(task.title)
             requestAnimationFrame(() => inputRef.current?.focus())
         }
-    }, [isEditing, task.title])
+    }, [isEditing])
+
+    const handleStartEdit = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        setLocalTitle(task.title)
+        onEditStart(task.id)
+    }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') onEditSave(task.id, localTitle)
@@ -116,10 +120,7 @@ export const TaskItem = memo(function TaskItem({
                     ) : (
                         <div
                             className="flex flex-col gap-1 flex-1 min-w-0"
-                            onDoubleClick={(e) => {
-                                e.stopPropagation()
-                                onEditStart(task.id)
-                            }}
+                            onDoubleClick={handleStartEdit}
                         >
                             <span
                                 className={clsx(

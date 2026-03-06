@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useCallback } from 'react'
 
@@ -8,7 +8,7 @@ interface UseSedentaryReminderProps {
 }
 
 export function useSedentaryReminder({ enabled, interval }: UseSedentaryReminderProps) {
-    const lastReminderTimeRef = useRef<number>(Date.now())
+    const lastReminderTimeRef = useRef<number>(0)
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
     const sendNotification = useCallback(() => {
@@ -49,7 +49,7 @@ export function useSedentaryReminder({ enabled, interval }: UseSedentaryReminder
 
         // Fallback alert if needed (optional, maybe too intrusive)
         // alert('该起身活动一下啦！')
-    }, [interval])
+    }, [])
 
     useEffect(() => {
         if (!enabled) {
@@ -87,3 +87,4 @@ export function useSedentaryReminder({ enabled, interval }: UseSedentaryReminder
 
     return { resetReminder }
 }
+
