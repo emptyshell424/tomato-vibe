@@ -19,7 +19,7 @@ interface UsePomodoroTimerProps {
   focusDuration: number
   shortBreakDuration: number
   longBreakDuration: number
-  onSessionComplete?: (mode: PomodoroMode, duration: number, taskId?: string) => void
+  onSessionComplete?: (mode: PomodoroMode, duration: number, taskId?: string, startedAt?: string) => void
   taskId?: string | null
   soundType?: 'bell' | 'digital' | 'wood'
   soundVolume?: number
@@ -45,7 +45,7 @@ function sendNotification(mode: PomodoroMode) {
     new Notification(titles[mode], {
       body: bodies[mode],
       icon: '/favicon.ico',
-      requireInteraction: true // Keep notification until user interacts
+      requireInteraction: true
     })
   } else if (Notification.permission !== 'denied') {
     Notification.requestPermission()
@@ -58,10 +58,8 @@ function triggerHaptics() {
   }
 }
 
-// Guaranteed local fallback bell sound (Data URI)
 const BASE64_BELL = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//uQZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZzoAAAAPAAAAEAAADwAABwcHBwcHBwcHBwcHBwcHBwcHDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMP///8AAAALRE9NSRIAAAAAAABpY3VsdGNvbmZpZ3VyZSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/+5BkAAAE8AUEsAFGAAAJ4AoAAAEMOQS/AAUoAAAnfCgAAAChU0FNTFJSRQCf9f7/1v7///6/////////////////////////////////////+nSAn1EAAAwAn9EgAA7iYp/REAAAMAn9C8An8mOf0RAADAn9C8An8mOf0RAADAn9C8An9Ejv0RAADAmf0RAADAmOf0RAADAmOf0RAADAmOf0RAADAmOf0RAADAmOf0RAADAmOf0RAADAnf9C8AAAAAAI8jI8jI8v/7kmQAAPXABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAD8AAAAAAI8jI8jI8v/7kmQAAL3ABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAL8AAAAAAI8jI8jI8v/7kmQAAPXABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAD8AAAAAAI8jI8jI8v/7kmQAAL3ABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAL8AAAAAAI8jI8jI8v/7kmQAAPXABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAD8AAAAAAI8jI8jI8v/7kmQAAL3ABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAL8AAAAAAI8jI8jI8v/7kmQAAPXABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAD8AAAAAAI8jI8jI8v/7kmQAAL3ABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAL8AAAAAAI8jI8jI8v/7kmQAAPXABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAD8AAAAAAI8jI8jI8v/7kmQAAL3ABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAL8AAAAAAI8jI8jI8v/7kmQAAPXABW5AAU5AAArSBoAABH6P8SJIyPIyPL/+/+5JkAAD8A'
 
-// CDN URLs for nicer sounds
 const SOUND_URLS = {
   bell: 'https://cdn.pixabay.com/audio/2021/08/04/audio_06d8a3915f.mp3',
   digital: 'https://cdn.pixabay.com/audio/2022/03/15/audio_e6e5a6f3b0.mp3',
@@ -79,6 +77,7 @@ export function usePomodoroTimer({
   hapticsEnabled = true,
 }: UsePomodoroTimerProps) {
   const [mode, setMode] = useState<PomodoroMode>('focus')
+  const [sessionDuration, setSessionDuration] = useState(focusDuration * 60)
   const [timeLeft, setTimeLeft] = useState(focusDuration * 60)
   const [isRunning, setIsRunning] = useState(false)
   const [completedSessions, setCompletedSessions] = useState(0)
@@ -86,6 +85,7 @@ export function usePomodoroTimer({
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const alarmAudioRef = useRef<HTMLAudioElement | null>(null)
+  const sessionStartedAtRef = useRef<string | null>(null)
 
   const stopAlarm = useCallback(() => {
     if (alarmAudioRef.current) {
@@ -93,12 +93,11 @@ export function usePomodoroTimer({
       alarmAudioRef.current = null
       setIsAlarmPlaying(false)
 
-      // Safety check: pause() might interrupt a pending play()
       try {
         audio.pause()
         audio.currentTime = 0
       } catch {
-        // Ignore errors during silent stop
+        // Ignore silent stop failures.
       }
     }
   }, [])
@@ -182,6 +181,7 @@ export function usePomodoroTimer({
       else playSynthesizedSound(type, volume)
     }
   }, [stopAlarm])
+
   const getDurationForMode = useCallback((currentMode: PomodoroMode) => {
     switch (currentMode) {
       case 'focus':
@@ -193,15 +193,22 @@ export function usePomodoroTimer({
     }
   }, [focusDuration, shortBreakDuration, longBreakDuration])
 
+  const clearSessionClock = useCallback(() => {
+    sessionStartedAtRef.current = null
+  }, [])
+
   const resetTimer = useCallback(() => {
     stopAlarm()
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
       intervalRef.current = null
     }
-    setTimeLeft(getDurationForMode(mode))
+    const nextDuration = getDurationForMode(mode)
+    clearSessionClock()
+    setSessionDuration(nextDuration)
+    setTimeLeft(nextDuration)
     setIsRunning(false)
-  }, [mode, getDurationForMode, stopAlarm])
+  }, [mode, getDurationForMode, stopAlarm, clearSessionClock])
 
   const switchMode = useCallback((newMode: PomodoroMode) => {
     stopAlarm()
@@ -209,10 +216,29 @@ export function usePomodoroTimer({
       clearInterval(intervalRef.current)
       intervalRef.current = null
     }
+    const nextDuration = getDurationForMode(newMode)
+    clearSessionClock()
     setMode(newMode)
-    setTimeLeft(getDurationForMode(newMode))
+    setSessionDuration(nextDuration)
+    setTimeLeft(nextDuration)
     setIsRunning(false)
-  }, [getDurationForMode, stopAlarm])
+  }, [getDurationForMode, stopAlarm, clearSessionClock])
+
+  const adjustTime = useCallback((delta: number) => {
+    if (mode !== 'focus') return
+
+    setSessionDuration((currentDuration) => {
+      const nextDuration = Math.max(60, Math.min(3600, currentDuration + delta))
+      const appliedDelta = nextDuration - currentDuration
+
+      setTimeLeft((currentTimeLeft) => {
+        const nextTimeLeft = currentTimeLeft + appliedDelta
+        return Math.max(60, Math.min(nextDuration, nextTimeLeft))
+      })
+
+      return nextDuration
+    })
+  }, [mode])
 
   useEffect(() => {
     if (isRunning) {
@@ -228,7 +254,8 @@ export function usePomodoroTimer({
             playCompletionSound(soundType, soundVolume)
             sendNotification(mode)
             if (hapticsEnabled) triggerHaptics()
-            onSessionComplete?.(mode, getDurationForMode(mode), taskId || undefined)
+            onSessionComplete?.(mode, sessionDuration, taskId || undefined, sessionStartedAtRef.current || new Date().toISOString())
+            clearSessionClock()
             setCompletedSessions(c => c + 1)
             return 0
           }
@@ -243,7 +270,8 @@ export function usePomodoroTimer({
         intervalRef.current = null
       }
     }
-  }, [isRunning, mode, getDurationForMode, onSessionComplete, taskId, soundType, soundVolume, hapticsEnabled, playCompletionSound])
+  }, [isRunning, mode, onSessionComplete, taskId, soundType, soundVolume, hapticsEnabled, playCompletionSound, sessionDuration, clearSessionClock])
+
 
   useEffect(() => {
     if (isRunning) {
@@ -259,6 +287,9 @@ export function usePomodoroTimer({
   const start = useCallback(() => {
     stopAlarm()
     if (timeLeft > 0) {
+      if (!sessionStartedAtRef.current) {
+        sessionStartedAtRef.current = new Date().toISOString()
+      }
       setIsRunning(true)
     }
   }, [timeLeft, stopAlarm])
@@ -276,9 +307,9 @@ export function usePomodoroTimer({
   }, [isRunning, start, pause])
 
   const progress = useCallback(() => {
-    const total = getDurationForMode(mode)
-    return ((total - timeLeft) / total) * 100
-  }, [mode, timeLeft, getDurationForMode])
+    const total = sessionDuration || getDurationForMode(mode)
+    return total > 0 ? ((total - timeLeft) / total) * 100 : 0
+  }, [mode, timeLeft, getDurationForMode, sessionDuration])
 
   return {
     mode,
@@ -291,13 +322,10 @@ export function usePomodoroTimer({
     switchMode,
     stopAlarm,
     progress,
-    setTimeLeft,
+    adjustTime,
     start,
     pause,
     formatTime,
   }
 }
-
-
-
 

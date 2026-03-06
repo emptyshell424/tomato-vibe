@@ -1,15 +1,17 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #fffafa;
-  /* Snow white for a cleaner look */
   --foreground: #2d3436;
   --primary: #FF6347;
   --primary-glow: rgba(255, 99, 71, 0.4);
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.3);
+  --font-ui: "Aptos", "Trebuchet MS", "Segoe UI", sans-serif;
+  --font-code: "Consolas", "SFMono-Regular", "Liberation Mono", monospace;
+  --font-display: "Courier New", "Consolas", monospace;
 }
 
 .dark {
@@ -26,15 +28,15 @@
   --color-foreground: var(--foreground);
   --color-tomato: #FF6347;
   --color-tomato-deep: #e65b40;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-timer: var(--font-space-mono);
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-code);
+  --font-timer: var(--font-display);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -66,7 +68,6 @@ body::before {
 }
 
 @keyframes breathe {
-
   0%,
   100% {
     box-shadow: 0 0 20px var(--primary-glow);
@@ -84,12 +85,11 @@ body::before {
 }
 
 .timer-text {
-  font-family: var(--font-timer);
+  font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }

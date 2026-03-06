@@ -1,9 +1,10 @@
-import { createClient } from './client'
+﻿import { createClient } from './client'
 import { PomodoroMode } from '@/types'
 
 interface SessionData {
   mode: PomodoroMode
   duration: number
+  started_at: string
   task_id?: string
 }
 
@@ -13,6 +14,8 @@ export async function saveSession(session: SessionData): Promise<boolean> {
 
   if (!user) return false
 
+  const completedAt = new Date().toISOString()
+
   const { error } = await supabase
     .from('pomodoro_sessions')
     .insert({
@@ -21,8 +24,8 @@ export async function saveSession(session: SessionData): Promise<boolean> {
       duration: session.duration,
       task_id: session.task_id || null,
       completed: true,
-      started_at: new Date().toISOString(),
-      completed_at: new Date().toISOString(),
+      started_at: session.started_at,
+      completed_at: completedAt,
     })
 
   if (error) {
@@ -57,4 +60,3 @@ export async function getTodaySessions(): Promise<number> {
 
   return (data || []).reduce((acc, session) => acc + session.duration / 60, 0)
 }
-
